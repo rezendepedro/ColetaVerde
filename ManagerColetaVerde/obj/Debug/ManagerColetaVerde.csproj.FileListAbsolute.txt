@@ -1,0 +1,6 @@
+c:\users\pedro.rezende\documents\visual studio 2013\Projects\ManagerColetaVerde\ManagerColetaVerde\bin\ManagerColetaVerde.dll.config
+c:\users\pedro.rezende\documents\visual studio 2013\Projects\ManagerColetaVerde\ManagerColetaVerde\bin\ManagerColetaVerde.dll
+c:\users\pedro.rezende\documents\visual studio 2013\Projects\ManagerColetaVerde\ManagerColetaVerde\bin\ManagerColetaVerde.pdb
+c:\users\pedro.rezende\documents\visual studio 2013\Projects\ManagerColetaVerde\ManagerColetaVerde\obj\Debug\ManagerColetaVerde.dll
+c:\users\pedro.rezende\documents\visual studio 2013\Projects\ManagerColetaVerde\ManagerColetaVerde\obj\Debug\ManagerColetaVerde.pdb
+c:\users\pedro.rezende\documents\visual studio 2013\Projects\ManagerColetaVerde\ManagerColetaVerde\obj\Debug\ManagerColetaVerde.csprojResolveAssemblyReference.cache
