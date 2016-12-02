@@ -4,3 +4,9 @@ c:\users\pedro.rezende\documents\visual studio 2013\Projects\ManagerColetaVerde\
 c:\users\pedro.rezende\documents\visual studio 2013\Projects\ManagerColetaVerde\ManagerColetaVerde\obj\Debug\ManagerColetaVerde.dll
 c:\users\pedro.rezende\documents\visual studio 2013\Projects\ManagerColetaVerde\ManagerColetaVerde\obj\Debug\ManagerColetaVerde.pdb
 c:\users\pedro.rezende\documents\visual studio 2013\Projects\ManagerColetaVerde\ManagerColetaVerde\obj\Debug\ManagerColetaVerde.csprojResolveAssemblyReference.cache
+C:\Users\pedro.rezende\Source\Repos\ColetaVerde\ManagerColetaVerde\bin\ManagerColetaVerde.dll.config
+C:\Users\pedro.rezende\Source\Repos\ColetaVerde\ManagerColetaVerde\bin\ManagerColetaVerde.dll
+C:\Users\pedro.rezende\Source\Repos\ColetaVerde\ManagerColetaVerde\bin\ManagerColetaVerde.pdb
+C:\Users\pedro.rezende\Source\Repos\ColetaVerde\ManagerColetaVerde\obj\Debug\ManagerColetaVerde.csprojResolveAssemblyReference.cache
+C:\Users\pedro.rezende\Source\Repos\ColetaVerde\ManagerColetaVerde\obj\Debug\ManagerColetaVerde.dll
+C:\Users\pedro.rezende\Source\Repos\ColetaVerde\ManagerColetaVerde\obj\Debug\ManagerColetaVerde.pdb

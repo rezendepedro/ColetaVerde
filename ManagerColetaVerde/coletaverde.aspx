@@ -220,8 +220,10 @@
 
         function setMarkerMap(lat,lng,icon)
         {
-            
-            markeratual = L.marker([lat, lng]).addTo(map).bindPopup('<strong>TESTE</strong><br>Mais um teste.<br><br><br><button type="button" class="btn btn-success" onclick="alerta()">Cadastrar</button><button type="button" class="btn btn-danger" onclick="alerta()">Remover</button>');
+            var checkbox = '<div class="checkbox"><label><input type="checkbox" value="papel">Papel</label>  <label><input type="checkbox" value="metal">Metal</label><label><input type="checkbox" value="plastico">Plástico|</label><label><input type="checkbox" value="organico">Organico</label></div>';
+            var btnconfirma = '<button type="button" style="width:45%; margin:5px;" class="btn btn-success" onclick="alerta()">Cadastrar</button>';
+            var btncancela = '<button type="button"  style="width:45%; margin:5px;" class="btn btn-danger" onclick="alerta()">Remover</button>';
+            markeratual = L.marker([lat, lng]).addTo(map).bindPopup('<strong>Ponto</strong><br>Mais um teste.<br><br>' + checkbox + '<br><br><div class="row">' + btnconfirma + ' ' + btncancela + '</div></div>');
             map.setView([lat,lng],18);
 
         }
