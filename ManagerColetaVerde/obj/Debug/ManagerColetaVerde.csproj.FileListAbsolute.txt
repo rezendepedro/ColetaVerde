@@ -10,3 +10,8 @@ C:\Users\pedro.rezende\Source\Repos\ColetaVerde\ManagerColetaVerde\bin\ManagerCo
 C:\Users\pedro.rezende\Source\Repos\ColetaVerde\ManagerColetaVerde\obj\Debug\ManagerColetaVerde.csprojResolveAssemblyReference.cache
 C:\Users\pedro.rezende\Source\Repos\ColetaVerde\ManagerColetaVerde\obj\Debug\ManagerColetaVerde.dll
 C:\Users\pedro.rezende\Source\Repos\ColetaVerde\ManagerColetaVerde\obj\Debug\ManagerColetaVerde.pdb
+C:\Users\User\Source\Repos\ColetaVerde\ManagerColetaVerde\bin\ManagerColetaVerde.dll
+C:\Users\User\Source\Repos\ColetaVerde\ManagerColetaVerde\bin\ManagerColetaVerde.pdb
+C:\Users\User\Source\Repos\ColetaVerde\ManagerColetaVerde\obj\Debug\ManagerColetaVerde.csprojResolveAssemblyReference.cache
+C:\Users\User\Source\Repos\ColetaVerde\ManagerColetaVerde\obj\Debug\ManagerColetaVerde.dll
+C:\Users\User\Source\Repos\ColetaVerde\ManagerColetaVerde\obj\Debug\ManagerColetaVerde.pdb

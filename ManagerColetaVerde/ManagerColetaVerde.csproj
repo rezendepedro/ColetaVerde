@@ -191,7 +191,9 @@
     <Content Include="js\jquery.js" />
     <Content Include="js\jquery.maskedinput.js" />
     <Content Include="js\jquery.maskMoney.js" />
+    <Content Include="js\server.js" />
     <Content Include="login.aspx" />
+    <Content Include="service.asmx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -211,6 +213,10 @@
       <DependentUpon>login.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="service.asmx.cs">
+      <DependentUpon>service.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

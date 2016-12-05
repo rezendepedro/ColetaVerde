@@ -23,6 +23,7 @@
         <%--<script src="Scripts/jquery.js" type="text/javascript"></script>--%>
         <script type="text/javascript" src="../dist/Leaflet.Coordinates-0.1.5.min.js"></script>
 	    <link rel="stylesheet" href="../dist/Leaflet.Coordinates-0.1.5.css"/>
+        <script src="js/server.js" type="text/javascript"></script>
     <style>
         html, body {
         height: 100%;
@@ -32,7 +33,7 @@
       #map {
         
        
-        height: 94%;
+        height: 96%;
         width: 100%;
         vertical-align:bottom;        
         bottom: 0px;
@@ -41,7 +42,7 @@
        #manager {
  
         border-radius: 3px;
-        height: 6%;
+        height: 4%;
         width: 100%;     
         top: 0px;
         left: 0px;
@@ -127,7 +128,7 @@
             <nav class="navbar navbar-default">
               <div class="container-fluid">
                 <div class="navbar-header">
-                  <img title="Coleta Verde" style="width:50px;height:50px;" src="img/coletaverde.png" />
+                  <img title="Coleta Verde" style="width:50px;height:45px;" src="img/coletaverde.png" />
                 </div>
               
                 <form class="navbar-form navbar-left" runat="server">
@@ -136,7 +137,7 @@
                     <input id="autocomplete" type="text" class="form-control" onFocus="geolocate()" placeholder="Search">                   
             
                     <div class="input-group-btn">
-                      <button class="btn btn-default" type="submit">
+                      <button class="btn btn-default" >
                         <i class="glyphicon glyphicon-search"></i>
                       </button>
                     </div>
@@ -154,8 +155,11 @@
     <script>
         var map;
         window.onload = inicial();
-        var markeratual;
-        var locationposition;
+       
+        var markeratual;//pega o marker que vai ser cadastrado
+        var imagematual;//imagem que vai ser cadastrada
+        var coletaatual;//array de string de tipos de coletas que vao ser cadastrado
+        var locationposition;// a latitude e longitude que vai ser cadastrada
         var placeSearch, autocomplete;
         var componentForm = {
             street_number: 'short_name',
@@ -203,35 +207,70 @@
                 maxZoom: 18
             });
 
+            //inicializa o mapa com o mapabase openstreetmao variavel grayscale
              map = L.map('map', {
                 layers: grayscale,
 
-            }).setView([-19.9700, -43.9270], 12);
+            }).setView([-19.9700, -43.9270], 12);//seta visualização inicial e zoom inicial respectivamente
 
-
-            L.control.scale().addTo(map);
+            //colcoa scala no maoa
+             L.control.scale().addTo(map);
+            //coloca mouse move coordenadas no maoa
             L.control.coordinates().addTo(map);
 
         }
-        function alerta(messagem)
+       
+        function insert()
         {
-            alert("teste");
+            
+            insertPonto(markeratual.getLatLng().lat, markeratual.getLatLng().lng, imagematual);//chamar função que esta no arquivo js/server.js        
+            
+
         }
+
+        
 
         function setMarkerMap(lat,lng,icon)
         {
-            var checkbox = '<div class="checkbox"><label><input type="checkbox" value="papel">Papel</label>  <label><input type="checkbox" value="metal">Metal</label><label><input type="checkbox" value="plastico">Plástico|</label><label><input type="checkbox" value="organico">Organico</label></div>';
-            var btnconfirma = '<button type="button" style="width:45%; margin:5px;" class="btn btn-success" onclick="alerta()">Cadastrar</button>';
-            var btncancela = '<button type="button"  style="width:45%; margin:5px;" class="btn btn-danger" onclick="alerta()">Remover</button>';
-            markeratual = L.marker([lat, lng]).addTo(map).bindPopup('<strong>Ponto</strong><br>Mais um teste.<br><br>' + checkbox + '<br><br><div class="row">' + btnconfirma + ' ' + btncancela + '</div></div>');
-            map.setView([lat,lng],18);
 
+            //boto~es checkbox para tipo de cole do posto
+            var checkbox = '<div class="checkbox"><label><input type="checkbox" value="papel">Papel</label>&ensp;<label><input type="checkbox" value="metal">Metal</label>&ensp;<label><input type="checkbox" value="plastico">Plástico</label>&ensp;<label><input type="checkbox" value="organico">Organico</label></div>';
+            //botão de cadastro do posto
+            var btnconfirma = '<button type="button" style="width:45%; margin:5px;" class="btn btn-success" onclick="insert()">Cadastrar</button>';
+            //botão de remover o posto
+            var btncancela = '<button type="button"  style="width:45%; margin:5px;" class="btn btn-danger" onclick="alerta()">Remover</button>';
+            //input para upload da imagem
+            var btnimagem = '<input type="file" onchange="previewFile(this)" name="filename" accept="image/gif, image/jpeg, image/png">';
+            //visualizador da imagem
+            var preview = '<img class="cadastroimg" style="width:150px;height:100px;top: 50%;left: 50%;" src="http://localhost:52253/img/posto_de_coleta.png"/>'
+            //criando um ponto no mapa e adicionando elementos dentro da popup
+            markeratual = L.marker([lat, lng]).addTo(map).bindPopup('<strong>Ponto</strong><br>Mais um teste.<br>' + btnimagem + '<br><div style="width:150px;height:60px;">' + preview + '</div><br><br>' + checkbox + '<br><br><div class="row">' + btnconfirma + ' ' + btncancela + '</div></div>');
+            map.setView([lat,lng],18);//visualização do mapa para o marker e o zoom 18
+
+        }
+        //seta a imagem no visualizador da popup e coloca dentro da variavel
+        function previewFile(obj) {
+          
+            var file = obj.files[0]; //sames as here
+            var reader = new FileReader();
+            
+            
+            reader.onloadend = function () {
+                $('.cadastroimg').attr('src', reader.result);
+                imagematual = reader.result;
+            }
+
+            if (file) {
+                reader.readAsDataURL(file); //reads the data as a URL
+            } else {
+                $('.cadastroimg').attr('src', '');
+            }
         }
       
 
         /////////////////////////////////////google geocode
         function geolocate() {
-           
+           ///setar posição pelo localização do navegador recebe de acordo com a permissão do usuario
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function (position) {                    
                     locationposition = {
@@ -246,7 +285,7 @@
             // Get the place details from the autocomplete object.
            
             var place = autocomplete.getPlace();
-            setMarkerMap(place.geometry.location.lat(), place.geometry.location.lng(), blueIcon);
+            setMarkerMap(place.geometry.location.lat(), place.geometry.location.lng(), blueIcon);//ao clicar no endereço do google
            
          
             
