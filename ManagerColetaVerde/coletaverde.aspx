@@ -154,8 +154,10 @@
  
     <script>
         var map;
+        var URLBASE = "http://localhost:52253/";
         window.onload = inicial();
         var ilum = L.layerGroup();
+        var select = L.layerGroup();
         var markeratual;//pega o marker que vai ser cadastrado
         var imagematual;//imagem que vai ser cadastrada
         var coletaatual;//array de string de tipos de coletas que vao ser cadastrado
@@ -217,7 +219,7 @@
              L.control.scale().addTo(map);
             //coloca mouse move coordenadas no maoa
             L.control.coordinates().addTo(map);
-
+            
         }
         function getBaseUrl() {
             return window.location.href.match(/^.*\//);
@@ -229,94 +231,146 @@
             
 
         }
+        $(document).ready(function () {
+
+                var result = selectPontos();            
+                var json = $.parseJSON(result);
+                
+
+                $.each(json, function (i, jsondata) {
+
+                    SelectMarkerMap(jsondata.id_posto,jsondata.lat,jsondata.lng,jsondata.foto,jsondata.hr_atendimento);
+                })
+            
+          
+            
+            
+        });
+           
 
         
 
-        function setMarkerMap(lat,lng,icon)
-        {
-            
-
-            //boto~es checkbox para tipo de cole do posto
-            var checkbox = '<div class="checkbox"><label><input type="checkbox" value="papel">Papel</label>&ensp;<label><input type="checkbox" value="metal">Metal</label>&ensp;<label><input type="checkbox" value="plastico">Plástico</label>&ensp;<label><input type="checkbox" value="organico">Organico</label></div>';
-            //botão de cadastro do posto
-            var btnconfirma = '<button type="button" style="width:45%; margin:5px;" class="btn btn-success" onclick="insert()">Cadastrar</button>';
-            //botão de remover o posto
-            var btncancela = '<button type="button"  style="width:45%; margin:5px;" class="btn btn-danger" onclick="alerta()">Remover</button>';
-            //input para upload da imagem
-            var btnimagem = '<input type="file" onchange="previewFile(this)" name="filename" accept="image/gif, image/jpeg, image/png">';
-            //visualizador da imagem
-            var preview = '<img class="cadastroimg" style="width:150px;height:100px;top: 50%;left: 50%;" src="http://localhost:52253/img/posto_de_coleta.png"/>'
-            if (markeratual)
+            function setMarkerMap(lat,lng,icon)
             {
-                ilum.removeLayer(markeratual);
-            }
-           
             
-            
-            //criando um ponto no mapa e adicionando elementos dentro da popup
-            markeratual = L.marker([lat, lng]).bindPopup('<strong>Ponto</strong><br>Mais um teste.<br>' + btnimagem + '<br><div style="width:150px;height:60px;">' + preview + '</div><br><br>' + checkbox + '<br><br><div class="row">' + btnconfirma + ' ' + btncancela + '</div></div>');
-            
-            ilum.addLayer(markeratual);
-            map.addLayer(ilum);
-            map.setView([lat, lng], 18);//visualização do mapa para o marker e o zoom 18
 
-        }
-        //seta a imagem no visualizador da popup e coloca dentro da variavel
-        function previewFile(obj) {
+                //boto~es checkbox para tipo de cole do posto
+                var checkbox = '<div class="checkbox"><label><input type="checkbox" value="papel">Papel</label>&ensp;<label><input type="checkbox" value="metal">Metal</label>&ensp;<label><input type="checkbox" value="plastico">Plástico</label>&ensp;<label><input type="checkbox" value="organico">Organico</label></div>';
+                //botão de cadastro do posto
+                var btnconfirma = '<button type="button" style="width:45%; margin:5px;" class="btn btn-success" onclick="insert()">Cadastrar</button>';
+                //botão de remover o posto
+                var btncancela = '<button type="button"  style="width:45%; margin:5px;" class="btn btn-danger" onclick="alerta()">Remover</button>';
+                //input para upload da imagem
+                var btnimagem = '<input type="file" onchange="previewFile(this)" name="filename" accept="image/gif, image/jpeg, image/png">';
+                //visualizador da imagem
+                var preview = '<img class="cadastroimg" style="width:150px;height:100px;top: 50%;left: 50%;" src="'+URLBASE+'img/posto_de_coleta.png"/>';
+                if (markeratual) {
+                    ilum.removeLayer(markeratual);
+                }
+            
+            
+                //criando um ponto no mapa e adicionando elementos dentro da popup
+                markeratual = L.marker([lat, lng]).bindPopup('<strong>Ponto</strong><br>Mais um teste.<br>' + btnimagem + '<br><div style="width:150px;height:60px;">' + preview + '</div><br><br>' + checkbox + '<br><br><div class="row">' + btnconfirma + ' ' + btncancela + '</div></div>');
+            
+                ilum.addLayer(markeratual);
+                map.addLayer(ilum);
+                map.setView([lat, lng], 18);//visualização do mapa para o marker e o zoom 18
+
+            }
+            function SelectMarkerMap(id,lat, lng,urlimagem,hr_funcionamento) {
+
+
+                //boto~es checkbox para tipo de cole do posto
+                var checkbox = '<div class="checkbox"><label><input type="checkbox" value="papel">Papel</label>&ensp;<label><input type="checkbox" value="metal">Metal</label>&ensp;<label><input type="checkbox" value="plastico">Plástico</label>&ensp;<label><input type="checkbox" value="organico">Organico</label></div>';
+                //botão de cadastro do posto
+                var btnconfirma = '<button type="button" style="width:45%; margin:5px;" class="btn btn-success" onclick="">Atualizar</button>';
+                //botão de remover o posto
+                var btncancela = '<button type="button"  style="width:45%; margin:5px;" class="btn btn-danger" onclick="alerta()">Remover</button>';
+                //input para upload da imagem
+                var btnimagem = '<input type="file" onchange="previewFileSelect(this,'+id+')" name="filename" accept="image/gif, image/jpeg, image/png">';
+                //visualizador da imagem
+                var preview = '<img id="' + id + '_img" style="width:150px;height:100px;top: 50%;left: 50%;" src=" '+URLBASE + urlimagem + '"/>';
+                //criando um ponto no mapa e adicionando elementos dentro da popup
+                var  marker = L.marker([lat, lng]).addTo(map).bindPopup('<strong>Ponto</strong><br>Mais um teste.<br>' + btnimagem + '<br><div style="width:150px;height:60px;">' + preview + '</div><br><br>' + checkbox + '<br><br><div class="row">' + btnconfirma + ' ' + btncancela + '</div></div>');
+
+                select.addLayer(marker);
+                map.addLayer(select);
+                map.setView([-19.9700, -43.9270], 12);//visualização do mapa para o marker e o zoom 18
+
+            }
+            //seta a imagem no visualizador da popup e coloca dentro da variavel
+            function previewFile(obj) {
           
-            var file = obj.files[0]; //sames as here
-            var reader = new FileReader();
+                var file = obj.files[0]; //sames as here
+                var reader = new FileReader();
             
             
-            reader.onloadend = function () {
-                $('.cadastroimg').attr('src', reader.result);
-                imagematual = reader.result;
-            }
+                reader.onloadend = function () {
+                    $('.cadastroimg').attr('src', reader.result);
+                    imagematual = reader.result;
+                }
 
-            if (file) {
-                reader.readAsDataURL(file); //reads the data as a URL
-            } else {
-                $('.cadastroimg').attr('src', '');
+                if (file) {
+                    reader.readAsDataURL(file); //reads the data as a URL
+                } else {
+                    $('.cadastroimg').attr('src', '');
+                }
             }
-        }
+            function previewFileSelect(obj,id) {
+
+                var file = obj.files[0]; //sames as here
+                var reader = new FileReader();
+
+
+                reader.onloadend = function () {
+                    $('#'+id+'_img').attr('src', reader.result);
+                    // imagematual = reader.result;
+                }
+
+                if (file) {
+                    reader.readAsDataURL(file); //reads the data as a URL
+                } else {
+                    $('#' + id + '_img').attr('src', '');
+                }
+            }
       
 
-        /////////////////////////////////////google geocode
-        function geolocate() {
-           ///setar posição pelo localização do navegador recebe de acordo com a permissão do usuario
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function (position) {                    
-                    locationposition = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    };                  
+            /////////////////////////////////////google geocode
+            function geolocate() {
+                ///setar posição pelo localização do navegador recebe de acordo com a permissão do usuario
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function (position) {                    
+                        locationposition = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };                  
                    
-                });
+                    });
+                }
             }
-        }
-        function fillInAddress() {
-            // Get the place details from the autocomplete object.
+            function fillInAddress() {
+                // Get the place details from the autocomplete object.
            
-            var place = autocomplete.getPlace();
-            setMarkerMap(place.geometry.location.lat(), place.geometry.location.lng(), blueIcon);//ao clicar no endereço do google
+                var place = autocomplete.getPlace();
+                setMarkerMap(place.geometry.location.lat(), place.geometry.location.lng(), blueIcon);//ao clicar no endereço do google
            
          
             
 
             
-        }
+            }
        
-        function initAutocomplete() {
-            // Create the autocomplete object, restricting the search to geographical
-            // location types.
-            autocomplete = new google.maps.places.Autocomplete(
-                /** @type {!HTMLInputElement} */(document.getElementById('autocomplete')),
-                { types: ['geocode'] });
+            function initAutocomplete() {
+                // Create the autocomplete object, restricting the search to geographical
+                // location types.
+                autocomplete = new google.maps.places.Autocomplete(
+                    /** @type {!HTMLInputElement} */(document.getElementById('autocomplete')),
+                    { types: ['geocode'] });
 
-            // When the user selects an address from the dropdown, populate the address
-            // fields in the form.
-            autocomplete.addListener('place_changed', fillInAddress);
-        }
+                // When the user selects an address from the dropdown, populate the address
+                // fields in the form.
+                autocomplete.addListener('place_changed', fillInAddress);
+            }
 
     </script>
       
