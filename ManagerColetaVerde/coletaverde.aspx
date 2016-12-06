@@ -155,7 +155,7 @@
     <script>
         var map;
         window.onload = inicial();
-       
+        var ilum = L.layerGroup();
         var markeratual;//pega o marker que vai ser cadastrado
         var imagematual;//imagem que vai ser cadastrada
         var coletaatual;//array de string de tipos de coletas que vao ser cadastrado
@@ -219,7 +219,9 @@
             L.control.coordinates().addTo(map);
 
         }
-       
+        function getBaseUrl() {
+            return window.location.href.match(/^.*\//);
+        }
         function insert()
         {
             
@@ -232,6 +234,7 @@
 
         function setMarkerMap(lat,lng,icon)
         {
+            
 
             //boto~es checkbox para tipo de cole do posto
             var checkbox = '<div class="checkbox"><label><input type="checkbox" value="papel">Papel</label>&ensp;<label><input type="checkbox" value="metal">Metal</label>&ensp;<label><input type="checkbox" value="plastico">Plástico</label>&ensp;<label><input type="checkbox" value="organico">Organico</label></div>';
@@ -243,9 +246,19 @@
             var btnimagem = '<input type="file" onchange="previewFile(this)" name="filename" accept="image/gif, image/jpeg, image/png">';
             //visualizador da imagem
             var preview = '<img class="cadastroimg" style="width:150px;height:100px;top: 50%;left: 50%;" src="http://localhost:52253/img/posto_de_coleta.png"/>'
+            if (markeratual)
+            {
+                ilum.removeLayer(markeratual);
+            }
+           
+            
+            
             //criando um ponto no mapa e adicionando elementos dentro da popup
-            markeratual = L.marker([lat, lng]).addTo(map).bindPopup('<strong>Ponto</strong><br>Mais um teste.<br>' + btnimagem + '<br><div style="width:150px;height:60px;">' + preview + '</div><br><br>' + checkbox + '<br><br><div class="row">' + btnconfirma + ' ' + btncancela + '</div></div>');
-            map.setView([lat,lng],18);//visualização do mapa para o marker e o zoom 18
+            markeratual = L.marker([lat, lng]).bindPopup('<strong>Ponto</strong><br>Mais um teste.<br>' + btnimagem + '<br><div style="width:150px;height:60px;">' + preview + '</div><br><br>' + checkbox + '<br><br><div class="row">' + btnconfirma + ' ' + btncancela + '</div></div>');
+            
+            ilum.addLayer(markeratual);
+            map.addLayer(ilum);
+            map.setView([lat, lng], 18);//visualização do mapa para o marker e o zoom 18
 
         }
         //seta a imagem no visualizador da popup e coloca dentro da variavel

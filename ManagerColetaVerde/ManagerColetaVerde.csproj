@@ -198,6 +198,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\DbUtils\DbConn.cs" />
+    <Compile Include="Classes\validacao.cs" />
     <Compile Include="coletaverde.aspx.cs">
       <DependentUpon>coletaverde.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

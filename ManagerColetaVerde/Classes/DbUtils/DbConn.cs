@@ -101,7 +101,7 @@ namespace ManagerColetaVerde.Classes.DbUtils
             }
         }
 
-        public void commandExec(String command)
+        public int commandExec(String command)
         {
             try
             {
@@ -112,15 +112,17 @@ namespace ManagerColetaVerde.Classes.DbUtils
            
                 if (rowInfected > 0)
                 {
+                    return rowInfected;
                    
                 }
                 else
                 {
-                   // HttpContext.Current.Response.Write("<script>alert('Ops, Algo deu errado!')</script>");
+                    return 0;
                 }
             }
             catch (Exception ex)
             {
+                return -1;
                 throw new System.Exception(ex.Message);
             }
             finally
