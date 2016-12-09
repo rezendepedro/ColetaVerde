@@ -69,6 +69,7 @@
     <Content Include="bootstrap\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="bootstrap\fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="bootstrap\js\bootstrap-select.js.map" />
+    <Content Include="img\map-marker-icon.png" />
     <Content Include="js\jQuery-Mask-Plugin-master\bower.json" />
     <Content Include="js\jQuery-Mask-Plugin-master\CHANGELOG.md" />
     <Content Include="js\jQuery-Mask-Plugin-master\component.json" />

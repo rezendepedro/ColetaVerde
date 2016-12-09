@@ -33,7 +33,7 @@
       #map {
         
        
-        height: 96%;
+        height: 95%;
         width: 100%;
         vertical-align:bottom;        
         bottom: 0px;
@@ -42,7 +42,7 @@
        #manager {
  
         border-radius: 3px;
-        height: 4%;
+        height: 5%;
         width: 100%;     
         top: 0px;
         left: 0px;
@@ -68,6 +68,9 @@
 .navbar-default .navbar-nav > li > a:hover,
 .navbar-default .navbar-nav > li > a:focus {
     color: #333;
+}
+.navbar-default .navbar-form{
+    width:90%;
 }
 .navbar-default .navbar-nav > .active > a, 
 .navbar-default .navbar-nav > .active > a:hover, 
@@ -124,7 +127,7 @@
    
         
     
-        <div id="manager">
+        <div id="manager" >
             <nav class="navbar navbar-default">
               <div class="container-fluid">
                 <div class="navbar-header">
@@ -134,13 +137,26 @@
                 <form class="navbar-form navbar-left" runat="server">
                     <asp:ScriptManager ID="ScriptManager1" runat="server" EnablePageMethods="true"/>
                   <div class="input-group">
-                    <input id="autocomplete" type="text" class="form-control" onFocus="geolocate()" placeholder="Search">                   
+                      <div style="height:100%; width:100%;">
+                          <select style="width:20%;" class="form-control" id="estado">
+                            <option value="0">Selecione o Estado</option>                               
+                            <option>Minas Gerais</option>                          
+                          </select>
+                           <select style="width:20%;" class="form-control" id="cidade">
+                            <option>Selecione o Cidade</option>
+                            <option value ="1">Belo Horizonte</option>                       
+                          </select>
+                          <input style="width:20%;" id="bairro" type="text" class="form-control"  placeholder="Bairro">
+                          <input  style="width:20%;"id="logradouro" type="text" class="form-control"  placeholder="Logradouro">
+                          <input  style="width:10%;"id="numero" type="text" class="form-control"  placeholder="Numero">
+                           <button type="button" class="btn btn-default" onclick="geocode();">
+                                 <i class="glyphicon glyphicon-search"></i>
+                           </button>
+                      </div>
+                      
+                       
             
-                    <div class="input-group-btn">
-                      <button class="btn btn-default" >
-                        <i class="glyphicon glyphicon-search"></i>
-                      </button>
-                    </div>
+                    
                   </div>
                 </form>
               </div>
@@ -160,8 +176,13 @@
         var select = L.layerGroup();
         var markeratual;//pega o marker que vai ser cadastrado
         var imagematual;//imagem que vai ser cadastrada
-        var coletaatual;//array de string de tipos de coletas que vao ser cadastrado
+        var coletaatual=[];//array de string de tipos de coletas que vao ser cadastrado
         var locationposition;// a latitude e longitude que vai ser cadastrada
+        var endEstadoatual;
+        var endCidadeAtual;
+        var endBairroAtual;
+        var endLogradouroAtual;
+        var endNumeroAtual;
         var placeSearch, autocomplete;
         var componentForm = {
             street_number: 'short_name',
@@ -171,39 +192,10 @@
             country: 'long_name',
             postal_code: 'short_name'
         };
-        var greenIcon = L.icon({
-            iconUrl: 'lib/images/ckpoint_verde.png',
-            shadowUrl: 'lib/images/marker-shadow.png',
-
-            iconSize: [20, 35], // size of the icon
-            shadowSize: [25, 40], // size of the shadow
-            iconAnchor: [20, 35], // point of the icon which will correspond to marker's location
-            shadowAnchor: [4, 40],  // the same for the shadow
-            popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
-        });
-        var redIcon = L.icon({
-            iconUrl: 'lib/images/ckpoint_vermelho.png',
-            shadowUrl: 'lib/images/marker-shadow.png',
-
-            iconSize: [20, 35], // size of the icon
-            shadowSize: [25, 40], // size of the shadow
-            iconAnchor: [20, 35], // point of the icon which will correspond to marker's location
-            shadowAnchor: [4, 40],  // the same for the shadow
-            popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
-        });
-        var blueIcon = L.icon({
-            iconUrl: 'lib/images/ckpoint_azul.png',
-            shadowUrl: 'lib/images/marker-shadow.png',
-
-            iconSize: [20, 35], // size of the icon
-            shadowSize: [25, 40], // size of the shadow
-            iconAnchor: [20, 35], // point of the icon which will correspond to marker's location
-            shadowAnchor: [4, 40],  // the same for the shadow
-            popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
-        });
-
+        var redIcon;
         function inicial()
         {
+            
             var grayscale = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
                 maxZoom: 18
@@ -213,33 +205,124 @@
              map = L.map('map', {
                 layers: grayscale,
 
-            }).setView([-19.9700, -43.9270], 12);//seta visualização inicial e zoom inicial respectivamente
+            }).setView([-19.9700, -43.9270], 9);//seta visualização inicial e zoom inicial respectivamente
 
             //colcoa scala no maoa
              L.control.scale().addTo(map);
             //coloca mouse move coordenadas no maoa
-            L.control.coordinates().addTo(map);
+             L.control.coordinates().addTo(map);
+             redIcon= L.icon({
+                 iconUrl: 'img/map-marker-icon.png',                    
+                 iconSize: [35, 35], // size of the icon
+             });
             
         }
         function getBaseUrl() {
             return window.location.href.match(/^.*\//);
         }
+        function changebox(obj)
+        {
+            var boxes = $('div.cadastro_checkbox input[type=checkbox]:checked');
+            coletaatual = [];
+            $.each(boxes, function (i, check) {
+               coletaatual.push([check.value]);
+            });
+
+          
+
+        }
         function insert()
         {
+            if (coletaatual.length > 0)
+            {
+                var resp = insertPonto(markeratual.getLatLng().lat, markeratual.getLatLng().lng, imagematual, endEstadoatual, endCidadeAtual, endBairroAtual, endLogradouroAtual, endNumeroAtual, coletaatual.toString());//chamar função que esta no arquivo js/server.js        
+                if (resp) {
+                    var result = selectPontos();
+                    var json = $.parseJSON(result);
+                    if (json && markeratual) {
+                        ilum.removeLayer(markeratual);
+                    }
+
+                    $.each(json, function (i, jsondata) {
+
+                        SelectMarkerMap(jsondata.id_posto, jsondata.lat, jsondata.lng, jsondata.foto, jsondata.hr_atendimento,coletaatual);
+                    })
+
+                }
+
+            }
+            else {
+                alert("Por favor escolha o tipo de material e tente novamente.")
+            }
+          
             
-            insertPonto(markeratual.getLatLng().lat, markeratual.getLatLng().lng, imagematual);//chamar função que esta no arquivo js/server.js        
+
+
             
 
         }
-        $(document).ready(function () {
 
+        function deletar(lat,lng,id)
+        {
+            deletarPontos(lat, lng, id);
+            var teste = "";
+            var markerremove;
+            for (i in select._layers)
+            {
+                if(id==select._layers[i].options.id)
+                {
+                    markerremove = select._layers[i];
+                }
+            }
+            if (markerremove)
+            {
+                select.removeLayer(markerremove);
+            }
+           
+                
+
+
+
+            //var markerremove = select.getLayerId(id);
+            //alert(markerremove)
+            //select.removeLayer(markerremove);
+
+        }
+        $(document).ready(function () {
+                var materiais = [];
                 var result = selectPontos();            
                 var json = $.parseJSON(result);
-                
+                if (json && markeratual)
+                {
+                    if(ilum)
+                     ilum.removeLayer(markeratual);
+                }
 
                 $.each(json, function (i, jsondata) {
 
-                    SelectMarkerMap(jsondata.id_posto,jsondata.lat,jsondata.lng,jsondata.foto,jsondata.hr_atendimento);
+                    var retorno = selectmaterial(jsondata.id_posto);
+                    var jsonmaterial = $.parseJSON(retorno);
+                    
+                    if (retorno)
+                    {
+                        $.each(jsonmaterial, function (j, jsonm) {
+
+                            materiais.push(
+                               [
+                                   jsonm.nom_material,
+                                   jsonm.id_material,
+                                   jsonm.id_posto
+
+
+                               ]);
+
+                        });
+                        SelectMarkerMap(jsondata.id_posto, jsondata.lat, jsondata.lng, jsondata.foto, jsondata.hr_atendimento, materiais);
+                    }
+                   
+
+                    
+                   
                 })
             
           
@@ -250,52 +333,89 @@
 
         
 
-            function setMarkerMap(lat,lng,icon)
-            {
+        function setMarkerMap(lat,lng)
+        {
             
 
-                //boto~es checkbox para tipo de cole do posto
-                var checkbox = '<div class="checkbox"><label><input type="checkbox" value="papel">Papel</label>&ensp;<label><input type="checkbox" value="metal">Metal</label>&ensp;<label><input type="checkbox" value="plastico">Plástico</label>&ensp;<label><input type="checkbox" value="organico">Organico</label></div>';
-                //botão de cadastro do posto
-                var btnconfirma = '<button type="button" style="width:45%; margin:5px;" class="btn btn-success" onclick="insert()">Cadastrar</button>';
-                //botão de remover o posto
-                var btncancela = '<button type="button"  style="width:45%; margin:5px;" class="btn btn-danger" onclick="alerta()">Remover</button>';
-                //input para upload da imagem
-                var btnimagem = '<input type="file" onchange="previewFile(this)" name="filename" accept="image/gif, image/jpeg, image/png">';
-                //visualizador da imagem
-                var preview = '<img class="cadastroimg" style="width:150px;height:100px;top: 50%;left: 50%;" src="'+URLBASE+'img/posto_de_coleta.png"/>';
-                if (markeratual) {
-                    ilum.removeLayer(markeratual);
-                }
+            //boto~es checkbox para tipo de cole do posto
+            var checkbox = '<br><div class="cadastro_checkbox"><label><input type="checkbox" onclick="changebox(this)" value="1">Papel</label>&ensp;<label><input type="checkbox" onclick="changebox(this)" value="2">Plástico</label>&ensp;<label><input  onclick="changebox(this)" type="checkbox" value="3">Vidro</label>&ensp;<label><input onclick="changebox(this)" type="checkbox" value="4">Metal</label></div>';
+            //botão de cadastro do posto
+            var btnconfirma = '<button type="button" style="width:45%; margin:5px;" class="btn btn-success" onclick="insert()">Cadastrar</button>';
+            //botão de remover o posto
+            var btncancela = '<button type="button"  style="width:45%; margin:5px;" class="btn btn-danger" onclick="">Remover</button>';
+            //input para upload da imagem
+            var btnimagem = '<input type="file" onchange="previewFile(this)" name="filename" accept="image/gif, image/jpeg, image/png">';
+            //visualizador da imagem
+            var preview = '<img class="cadastroimg" style="width:200px;height:100px;top: 50%;left: 50%;" src="' + URLBASE + 'img/posto_de_coleta.png"/>';
+            //input dia/hora funcionamneto
+            var diahora = "";
+
+            if (markeratual) {
+                ilum.removeLayer(markeratual);
+            }
             
             
-                //criando um ponto no mapa e adicionando elementos dentro da popup
-                markeratual = L.marker([lat, lng]).bindPopup('<strong>Ponto</strong><br>Mais um teste.<br>' + btnimagem + '<br><div style="width:150px;height:60px;">' + preview + '</div><br><br>' + checkbox + '<br><br><div class="row">' + btnconfirma + ' ' + btncancela + '</div></div>');
+            //criando um ponto no mapa e adicionando elementos dentro da popup
+            markeratual = L.marker([lat, lng],{icon:redIcon}).bindPopup('<strong>Ponto</strong><br>Mais um teste.<br>' + btnimagem + '<br><div style="width:150px;height:60px;">' + preview + '</div><br><br>' + checkbox + '<br><br><div class="row">' + btnconfirma + ' '  + '</div></div>');
             
                 ilum.addLayer(markeratual);
                 map.addLayer(ilum);
                 map.setView([lat, lng], 18);//visualização do mapa para o marker e o zoom 18
 
             }
-            function SelectMarkerMap(id,lat, lng,urlimagem,hr_funcionamento) {
-
-
+            function SelectMarkerMap(pk,lat, lng,urlimagem,hr_funcionamento,materiais) {
+                var checkbox = '<br><div class="' + pk + '_checkbox">';
+                for (var i = 0; i < materiais.length; i++)
+                {
+                   
+                    if (materiais[i][2] != null)
+                    {
+                        checkbox += '<label><input type="checkbox" value="' + materiais[i][1] + '" checked="true">' + materiais[i][0] + '</label>&ensp;';
+                    }
+                    else {
+                        checkbox += '<label><input type="checkbox" value="' + materiais[i][1] + '" checked="false">' + materiais[i][0] + '</label>&ensp;';
+                    }
+                   
+                }
+                checkbox += '</div>';
                 //boto~es checkbox para tipo de cole do posto
-                var checkbox = '<div class="checkbox"><label><input type="checkbox" value="papel">Papel</label>&ensp;<label><input type="checkbox" value="metal">Metal</label>&ensp;<label><input type="checkbox" value="plastico">Plástico</label>&ensp;<label><input type="checkbox" value="organico">Organico</label></div>';
+                // checkbox = '<br><div class="' + pk + '_checkbox"><label><input type="checkbox" value="1" >Papel</label>&ensp;<label><input type="checkbox" value="2">Plástico</label>&ensp;<label><input type="checkbox" value="3">Vidro</label>&ensp;<label><input type="checkbox" value="4">Metal</label></div>';
                 //botão de cadastro do posto
                 var btnconfirma = '<button type="button" style="width:45%; margin:5px;" class="btn btn-success" onclick="">Atualizar</button>';
                 //botão de remover o posto
-                var btncancela = '<button type="button"  style="width:45%; margin:5px;" class="btn btn-danger" onclick="alerta()">Remover</button>';
+                var btncancela = '<button type="button"  style="width:45%; margin:5px;" class="btn btn-danger" onclick="deletar(' + lat + ',' + lng + ',' + pk + ')">Remover</button>';
                 //input para upload da imagem
-                var btnimagem = '<input type="file" onchange="previewFileSelect(this,'+id+')" name="filename" accept="image/gif, image/jpeg, image/png">';
+                var btnimagem = '<input type="file" onchange="previewFileSelect(this,' + pk + ')" name="filename" accept="image/gif, image/jpeg, image/png">';
                 //visualizador da imagem
-                var preview = '<img id="' + id + '_img" style="width:150px;height:100px;top: 50%;left: 50%;" src=" '+URLBASE + urlimagem + '"/>';
+              
+                if (urlimagem != "null" && urlimagem != "" && urlimagem != null)
+                {
+                    var preview = '<img id="' + pk + '_img" style="width:200px;height:100px;top: 50%;left: 50%;" src=" ' + URLBASE + urlimagem + '"/>';
+                }
+                else {
+                    var preview = '<img id="' + pk + '_img" style="width:200px;height:100px;top: 50%;left: 50%;" src=""/>';
+                }
+                
                 //criando um ponto no mapa e adicionando elementos dentro da popup
-                var  marker = L.marker([lat, lng]).addTo(map).bindPopup('<strong>Ponto</strong><br>Mais um teste.<br>' + btnimagem + '<br><div style="width:150px;height:60px;">' + preview + '</div><br><br>' + checkbox + '<br><br><div class="row">' + btnconfirma + ' ' + btncancela + '</div></div>');
-
+                var marker = L.marker([lat, lng], { id: pk }).addTo(map).bindPopup('<strong>Ponto</strong><br>Mais um teste.<br>' + btnimagem + '<br><div style="width:150px;height:60px;">' + preview + '</div><br><br>' + checkbox + '<br><br><div class="row">'  + ' ' + btncancela + '</div></div>');
+                
+                var boxes = $('#' + pk + '_checkbox input[type=checkbox]');
+                
+                //$.each(boxes, function (i, check) {
+                //    alert(check.checked);
+                //    for (var i = 0; i < materiais.length; i++)
+                //    {
+                //        if(materiais[i]==check.value)
+                //        {
+                           
+                //            check.checked = true;
+                //        }
+                //    }
+                   
+                //});
                 select.addLayer(marker);
                 map.addLayer(select);
-                map.setView([-19.9700, -43.9270], 12);//visualização do mapa para o marker e o zoom 18
+                map.setView([-19.9700, -43.9270], 9);//visualização do mapa para o marker e o zoom 18
 
             }
             //seta a imagem no visualizador da popup e coloca dentro da variavel
@@ -323,7 +443,7 @@
 
 
                 reader.onloadend = function () {
-                    $('#'+id+'_img').attr('src', reader.result);
+                    $('#'+id+'_img').attr('src', reader.result);//cria a visualização dpara os marker ja cadastrados
                     // imagematual = reader.result;
                 }
 
@@ -335,47 +455,49 @@
             }
       
 
-            /////////////////////////////////////google geocode
-            function geolocate() {
-                ///setar posição pelo localização do navegador recebe de acordo com a permissão do usuario
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(function (position) {                    
-                        locationposition = {
-                            lat: position.coords.latitude,
-                            lng: position.coords.longitude
-                        };                  
-                   
-                    });
-                }
-            }
-            function fillInAddress() {
-                // Get the place details from the autocomplete object.
+          
            
-                var place = autocomplete.getPlace();
-                setMarkerMap(place.geometry.location.lat(), place.geometry.location.lng(), blueIcon);//ao clicar no endereço do google
-           
-         
-            
+            function geocode()
+            {
+                //concatena os valores digitados nos campos
+                var address = $("#estado option:selected").text() + " " + $('#cidade option:selected').text() + " " + $('#bairro').val() + " " + $('#logradouro').val() + " " + $('#numero').val();
+                //monta a url para geocode do google
+                var url = "http://maps.google.com/maps/api/geocode/json?address=" + address;
+                //limpa as variaveis
+                endEstadoatual = "";
+                endCidadeAtual = "";
+                endBairroAtual = "";
+                endLogradouroAtual = "";
+                endNumeroAtual = "";
+                //request url para retorna lat e long
+                $.getJSON(url, function(data) {
+                    if (data.status == "OK")//verifica se geocode deu certo
+                    {                      
+                            var lng = data.results[0].geometry.location.lng;//pega a longitude
+                            var lat = data.results[0].geometry.location.lat;//pega a latitude  
+                            //seta os dados de endereço em variaveis separadas para cadastrar no banco
+                            endEstadoatual = $('#estado').val();
+                            endCidadeAtual = $('#cidade').val();
+                            endBairroAtual = $('#bairro').val();
+                            endLogradouroAtual = $('#logradouro').val();
+                            endNumeroAtual = $('#numero').val();
 
-            
+                            setMarkerMap(lat, lng);  //coloca o marker no mapa                     
+
+                    }
+                    else {
+                        alert("Endereço não encontrado.");
+                    }
+                    
+
+
+                });
             }
        
-            function initAutocomplete() {
-                // Create the autocomplete object, restricting the search to geographical
-                // location types.
-                autocomplete = new google.maps.places.Autocomplete(
-                    /** @type {!HTMLInputElement} */(document.getElementById('autocomplete')),
-                    { types: ['geocode'] });
-
-                // When the user selects an address from the dropdown, populate the address
-                // fields in the form.
-                autocomplete.addListener('place_changed', fillInAddress);
-            }
+            
 
     </script>
       
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBAHeOuZu1IdAYuywncZ5vB5vzG9K-QtY&libraries=places&callback=initAutocomplete"
-        async defer></script>
-     
+  
 </body>
 </html>
